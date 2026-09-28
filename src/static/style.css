@@ -68,7 +68,7 @@ main { flex: 1; }
 .app-icon-fallback { display: grid; place-items: center; width: 100%; height: 100%; background: linear-gradient(135deg, var(--forest-800), var(--emerald)); color: var(--lime); }
 .featured-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; color: #507900; background: #e7f9ae; padding: 5px 8px; border-radius: 999px; }
 .app-card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 2px; }
-.app-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 5px 8px; font-size: .68rem; font-weight: 800; line-height: 1.1; }
+.app-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 7px; font-size: 6pt; font-weight: 800; line-height: 1.1; }
 .app-badge-access { background: #e7f9ee; color: #166534; }
 .app-badge-login_required { background: #fff4d6; color: #92400e; }
 .app-badge-pricing { background: #eef2ff; color: #3730a3; }
