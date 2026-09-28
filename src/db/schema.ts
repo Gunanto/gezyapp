@@ -48,3 +48,12 @@ export interface Application {
 export interface ApplicationWithCategory extends Application {
   category_name: string | null;
 }
+
+export interface ApplicationScreenshot {
+  id: string;
+  application_id: string;
+  image_path: string;
+  alt_text: string;
+  sort_order: number;
+  created_at: string;
+}

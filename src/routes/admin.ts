@@ -1,12 +1,13 @@
-import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, unlink } from "node:fs/promises";
+import { basename, join } from "node:path";
 import type { Hono } from "hono";
 import { config } from "../config/env";
-import { archiveApplication, allCategories, applicationInputSchema, applicationStats, createApplication, createCategory, deleteApplication, deleteCategory, findApplication, listAdminApplications, updateApplication, updateCategory } from "../services/applications";
+import { archiveApplication, allCategories, applicationInputSchema, applicationStats, countApplicationScreenshots, createApplication, createApplicationScreenshots, createCategory, deleteApplication, deleteApplicationScreenshot, deleteCategory, findApplication, findApplicationScreenshot, listAdminApplications, listApplicationScreenshots, MAX_APPLICATION_SCREENSHOTS, updateApplication, updateCategory } from "../services/applications";
 import { currentAdmin, csrfToken } from "./auth";
 import { csrfIsValid } from "../services/csrf";
 import { esc, flash, adminPageHeader, adminTable, layout } from "../views/html";
 import type { ApplicationInput } from "../services/applications";
+import type { ApplicationScreenshot } from "../db/schema";
 
 function value(body: Record<string, unknown>, key: string) {
   const item = body[key];
@@ -56,9 +57,54 @@ async function saveIcon(input: unknown) {
   return relative;
 }
 
-function applicationForm(csrf: string, categories: ReturnType<typeof allCategories>, values: Partial<ApplicationInput> & { iconPath?: string | null }, action: string, submitLabel: string, error = "") {
+function screenshotFiles(input: unknown) {
+  const items = Array.isArray(input) ? input : [input];
+  return items.filter((item): item is File => item instanceof File && item.size > 0);
+}
+
+async function saveScreenshot(input: File) {
+  if (input.size > config.MAX_UPLOAD_MB * 1024 * 1024) throw new Error(`Ukuran screenshot maksimal ${config.MAX_UPLOAD_MB} MB per gambar.`);
+  const bytes = new Uint8Array(await input.arrayBuffer());
+  const signatures: Array<{ mime: string; extension: string; matches: (data: Uint8Array) => boolean }> = [
+    { mime: "image/png", extension: "png", matches: (data) => data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4e && data[3] === 0x47 },
+    { mime: "image/jpeg", extension: "jpg", matches: (data) => data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff },
+    { mime: "image/webp", extension: "webp", matches: (data) => String.fromCharCode(...data.slice(0, 4)) === "RIFF" && String.fromCharCode(...data.slice(8, 12)) === "WEBP" },
+  ];
+  const format = signatures.find((item) => item.mime === input.type && item.matches(bytes));
+  if (!format) throw new Error("Screenshot harus berupa PNG, JPEG, atau WebP yang valid.");
+  const relative = `/uploads/screenshots/${crypto.randomUUID()}.${format.extension}`;
+  const absolute = join(config.uploadDir, "screenshots", basename(relative));
+  await mkdir(join(config.uploadDir, "screenshots"), { recursive: true });
+  await Bun.write(absolute, bytes);
+  return relative;
+}
+
+async function removeUploadedFiles(paths: string[]) {
+  await Promise.all(paths.map(async (path) => {
+    try {
+      await unlink(join(config.uploadDir, "screenshots", basename(path)));
+    } catch {
+      // File may already be absent; database cleanup remains authoritative.
+    }
+  }));
+}
+
+async function saveScreenshotFiles(files: File[]) {
+  const paths: string[] = [];
+  try {
+    for (const file of files) paths.push(await saveScreenshot(file));
+    return paths;
+  } catch (error) {
+    await removeUploadedFiles(paths);
+    throw error;
+  }
+}
+
+function applicationForm(csrf: string, categories: ReturnType<typeof allCategories>, values: Partial<ApplicationInput> & { iconPath?: string | null; applicationId?: string; screenshots?: ApplicationScreenshot[]; screenshotAlt?: string }, action: string, submitLabel: string, error = "") {
   const categoryOptions = categories.map((category) => `<option value="${esc(category.id)}" ${values.categoryId === category.id ? "selected" : ""}>${esc(category.name)}</option>`).join("");
-  return `<section class="admin-main"><div class="container form-shell"><a class="back-link" href="/admin/applications">← Kembali ke aplikasi</a>${error ? flash(error, "error") : ""}<div class="panel"><p class="eyebrow">Katalog aplikasi</p><h1>${esc(submitLabel === "Simpan perubahan" ? "Edit aplikasi" : "Tambah aplikasi")}</h1><form method="post" action="${action}" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="${esc(csrf)}"><div class="form-grid"><div class="form-field"><label for="name">Nama aplikasi</label><input class="form-control" id="name" name="name" value="${esc(values.name)}" required maxlength="120"></div><div class="form-field"><label for="slug">Slug</label><input class="form-control" id="slug" name="slug" value="${esc(values.slug)}" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required><small>Contoh: gezy-teach</small></div><div class="form-field full"><label for="url">URL aplikasi</label><input class="form-control" id="url" name="url" type="url" value="${esc(values.url)}" placeholder="https://" required><small>Gunakan URL HTTPS.</small></div><div class="form-field full"><label for="shortDescription">Deskripsi singkat</label><input class="form-control" id="shortDescription" name="shortDescription" value="${esc(values.shortDescription)}" maxlength="240" required></div><div class="form-field full"><label for="description">Deskripsi lengkap</label><textarea class="form-control" id="description" name="description" rows="5">${esc(values.description)}</textarea></div><div class="form-field"><label for="categoryId">Kategori</label><select class="form-control" id="categoryId" name="categoryId"><option value="">Tanpa kategori</option>${categoryOptions}</select></div><div class="form-field"><label for="status">Status</label><select class="form-control" id="status" name="status"><option value="draft" ${values.status === "draft" ? "selected" : ""}>Draf</option><option value="published" ${values.status === "published" ? "selected" : ""}>Terbit</option><option value="archived" ${values.status === "archived" ? "selected" : ""}>Arsip</option></select></div><div class="form-field"><label for="accessType">Akses pengunjung</label><select class="form-control" id="accessType" name="accessType"><option value="public" ${values.accessType === "public" ? "selected" : ""}>Publik · tanpa akun</option><option value="login_required" ${values.accessType === "login_required" ? "selected" : ""}>Perlu akun masuk</option></select><small>Informasi ini hanya tampil jika diaktifkan di bawah.</small></div><div class="form-field"><label for="pricingType">Harga</label><select class="form-control" id="pricingType" name="pricingType"><option value="free" ${values.pricingType === "free" ? "selected" : ""}>Gratis</option><option value="paid" ${values.pricingType === "paid" ? "selected" : ""}>Berbayar</option><option value="freemium" ${values.pricingType === "freemium" ? "selected" : ""}>Freemium</option></select><small>Pilih status harga yang paling sesuai.</small></div><div class="form-field"><label for="keywords">Kata kunci</label><input class="form-control" id="keywords" name="keywords" value="${esc(values.keywords)}" placeholder="belajar, kelas, sekolah"></div><div class="form-field"><label for="sortOrder">Urutan</label><input class="form-control" id="sortOrder" name="sortOrder" type="number" min="0" max="9999" value="${esc(values.sortOrder ?? 0)}"></div><div class="form-field full"><label for="icon">Ikon aplikasi</label><input class="form-control" id="icon" name="icon" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPEG, atau WebP; maksimal ${config.MAX_UPLOAD_MB} MB.${values.iconPath ? " Ikon saat ini akan dipertahankan jika tidak memilih berkas baru." : ""}</small></div><div class="form-field full"><span class="form-label">Informasi pada card publik</span><label class="form-check"><input type="checkbox" name="showAccessInfo" ${values.showAccessInfo !== false ? "checked" : ""}><span>Tampilkan badge akses (Publik / Perlu akun)</span></label><label class="form-check"><input type="checkbox" name="showPricingInfo" ${values.showPricingInfo !== false ? "checked" : ""}><span>Tampilkan badge harga (Gratis / Berbayar / Freemium)</span></label></div><label class="form-check full"><input type="checkbox" name="isFeatured" ${values.isFeatured ? "checked" : ""}><span>Tandai sebagai aplikasi unggulan</span></label></div><div class="form-actions"><button class="button button-primary" type="submit">${esc(submitLabel)}</button><a class="button button-secondary" href="/admin/applications">Batal</a></div></form></div></div></section>`;
+  const currentScreenshots = values.screenshots ?? [];
+  const screenshotList = currentScreenshots.length ? `<div class="screenshot-admin-list">${currentScreenshots.map((screenshot) => `<div class="screenshot-admin-row"><img src="${esc(screenshot.image_path)}" alt=""><span>${esc(screenshot.alt_text || "Screenshot aplikasi")}</span><a class="button button-small button-quiet" href="/admin/applications/${esc(values.applicationId)}/screenshots/${esc(screenshot.id)}/delete">Hapus</a></div>`).join("")}</div>` : `<p class="muted screenshot-empty">Belum ada screenshot. Pengunjung tetap dapat melihat informasi aplikasi.</p>`;
+  return `<section class="admin-main"><div class="container form-shell"><a class="back-link" href="/admin/applications">← Kembali ke aplikasi</a>${error ? flash(error, "error") : ""}<div class="panel"><p class="eyebrow">Katalog aplikasi</p><h1>${esc(submitLabel === "Simpan perubahan" ? "Edit aplikasi" : "Tambah aplikasi")}</h1><form method="post" action="${action}" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="${esc(csrf)}"><div class="form-grid"><div class="form-field"><label for="name">Nama aplikasi</label><input class="form-control" id="name" name="name" value="${esc(values.name)}" required maxlength="120"></div><div class="form-field"><label for="slug">Slug</label><input class="form-control" id="slug" name="slug" value="${esc(values.slug)}" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required><small>Contoh: gezy-teach</small></div><div class="form-field full"><label for="url">URL aplikasi</label><input class="form-control" id="url" name="url" type="url" value="${esc(values.url)}" placeholder="https://" required><small>Gunakan URL HTTPS.</small></div><div class="form-field full"><label for="shortDescription">Deskripsi singkat</label><input class="form-control" id="shortDescription" name="shortDescription" value="${esc(values.shortDescription)}" maxlength="240" required></div><div class="form-field full"><label for="description">Deskripsi lengkap</label><textarea class="form-control" id="description" name="description" rows="5">${esc(values.description)}</textarea></div><div class="form-field"><label for="categoryId">Kategori</label><select class="form-control" id="categoryId" name="categoryId"><option value="">Tanpa kategori</option>${categoryOptions}</select></div><div class="form-field"><label for="status">Status</label><select class="form-control" id="status" name="status"><option value="draft" ${values.status === "draft" ? "selected" : ""}>Draf</option><option value="published" ${values.status === "published" ? "selected" : ""}>Terbit</option><option value="archived" ${values.status === "archived" ? "selected" : ""}>Arsip</option></select></div><div class="form-field"><label for="accessType">Akses pengunjung</label><select class="form-control" id="accessType" name="accessType"><option value="public" ${values.accessType === "public" ? "selected" : ""}>Publik · tanpa akun</option><option value="login_required" ${values.accessType === "login_required" ? "selected" : ""}>Perlu akun masuk</option></select><small>Informasi ini hanya tampil jika diaktifkan di bawah.</small></div><div class="form-field"><label for="pricingType">Harga</label><select class="form-control" id="pricingType" name="pricingType"><option value="free" ${values.pricingType === "free" ? "selected" : ""}>Gratis</option><option value="paid" ${values.pricingType === "paid" ? "selected" : ""}>Berbayar</option><option value="freemium" ${values.pricingType === "freemium" ? "selected" : ""}>Freemium</option></select><small>Pilih status harga yang paling sesuai.</small></div><div class="form-field"><label for="keywords">Kata kunci</label><input class="form-control" id="keywords" name="keywords" value="${esc(values.keywords)}" placeholder="belajar, kelas, sekolah"></div><div class="form-field"><label for="sortOrder">Urutan</label><input class="form-control" id="sortOrder" name="sortOrder" type="number" min="0" max="9999" value="${esc(values.sortOrder ?? 0)}"></div><div class="form-field full"><label for="icon">Ikon aplikasi</label><input class="form-control" id="icon" name="icon" type="file" accept="image/png,image/jpeg,image/webp"><small>PNG, JPEG, atau WebP; maksimal ${config.MAX_UPLOAD_MB} MB.${values.iconPath ? " Ikon saat ini akan dipertahankan jika tidak memilih berkas baru." : ""}</small></div><div class="form-field full"><label for="screenshots">Screenshot aplikasi</label><input class="form-control" id="screenshots" name="screenshots" type="file" accept="image/png,image/jpeg,image/webp" multiple><input class="form-control" id="screenshotAlt" name="screenshotAlt" value="${esc(values.screenshotAlt)}" placeholder="Contoh: Tampilan dashboard GezyCBT"><small>Maksimal ${MAX_APPLICATION_SCREENSHOTS} gambar per aplikasi, ${config.MAX_UPLOAD_MB} MB per gambar. Deskripsi diterapkan pada gambar baru.</small>${screenshotList}</div><div class="form-field full"><span class="form-label">Informasi pada card publik</span><label class="form-check"><input type="checkbox" name="showAccessInfo" ${values.showAccessInfo !== false ? "checked" : ""}><span>Tampilkan badge akses (Publik / Perlu akun)</span></label><label class="form-check"><input type="checkbox" name="showPricingInfo" ${values.showPricingInfo !== false ? "checked" : ""}><span>Tampilkan badge harga (Gratis / Berbayar / Freemium)</span></label></div><label class="form-check full"><input type="checkbox" name="isFeatured" ${values.isFeatured ? "checked" : ""}><span>Tandai sebagai aplikasi unggulan</span></label></div><div class="form-actions"><button class="button button-primary" type="submit">${esc(submitLabel)}</button><a class="button button-secondary" href="/admin/applications">Batal</a></div></form></div></div></section>`;
 }
 
 export function registerAdminRoutes(app: Hono) {
@@ -85,7 +131,7 @@ export function registerAdminRoutes(app: Hono) {
 
   app.get("/admin/applications/new", (c) => {
     const admin = currentAdmin(c)!;
-    return c.html(layout({ title: "Tambah aplikasi", body: applicationForm(csrfToken(c), allCategories(), { status: "draft", accessType: "public", pricingType: "free", showAccessInfo: true, showPricingInfo: true, isFeatured: false, sortOrder: 0 }, "/admin/applications", "Simpan aplikasi"), admin, csrf: csrfToken(c) }));
+    return c.html(layout({ title: "Tambah aplikasi", body: applicationForm(csrfToken(c), allCategories(), { status: "draft", accessType: "public", pricingType: "free", showAccessInfo: true, showPricingInfo: true, isFeatured: false, sortOrder: 0, screenshots: [] }, "/admin/applications", "Simpan aplikasi"), admin, csrf: csrfToken(c) }));
   });
 
   app.post("/admin/applications", async (c) => {
@@ -94,11 +140,21 @@ export function registerAdminRoutes(app: Hono) {
     if (!csrfIsValid(c, body._csrf)) return c.text("CSRF token tidak valid.", 403);
     try {
       const input = parseApplication(body);
+      const files = screenshotFiles(body.screenshots);
+      if (files.length > MAX_APPLICATION_SCREENSHOTS) throw new Error(`Maksimal ${MAX_APPLICATION_SCREENSHOTS} screenshot per aplikasi.`);
       const iconPath = await saveIcon(body.icon);
-      createApplication(input, iconPath ?? null);
+      const screenshotPaths = await saveScreenshotFiles(files);
+      try {
+        const created = createApplication(input, iconPath ?? null);
+        if (!created) throw new Error("Aplikasi gagal dibuat.");
+        createApplicationScreenshots(created.id, screenshotPaths, value(body, "screenshotAlt"));
+      } catch (error) {
+        await removeUploadedFiles(screenshotPaths);
+        throw error;
+      }
       return c.redirect("/admin/applications?created=1");
     } catch (error) {
-      const values = { ...Object.fromEntries(Object.entries(body).filter(([, item]) => typeof item === "string")), accessType: value(body, "accessType") || "public", pricingType: value(body, "pricingType") || "free", showAccessInfo: body.showAccessInfo === "on", showPricingInfo: body.showPricingInfo === "on", isFeatured: body.isFeatured === "on" } as Partial<ApplicationInput>;
+      const values = { ...Object.fromEntries(Object.entries(body).filter(([, item]) => typeof item === "string")), accessType: value(body, "accessType") || "public", pricingType: value(body, "pricingType") || "free", showAccessInfo: body.showAccessInfo === "on", showPricingInfo: body.showPricingInfo === "on", isFeatured: body.isFeatured === "on", screenshotAlt: value(body, "screenshotAlt"), screenshots: [] } as Partial<ApplicationInput> & { screenshotAlt?: string; screenshots?: ApplicationScreenshot[] };
       return c.html(layout({ title: "Tambah aplikasi", body: applicationForm(csrfToken(c), allCategories(), values, "/admin/applications", "Simpan aplikasi", friendlyError(error)), admin, csrf: csrfToken(c) }), 400);
     }
   });
@@ -107,7 +163,7 @@ export function registerAdminRoutes(app: Hono) {
     const admin = currentAdmin(c)!;
     const application = findApplication(c.req.param("id"));
     if (!application) return c.notFound();
-    return c.html(layout({ title: `Edit ${application.name}`, body: applicationForm(csrfToken(c), allCategories(), { name: application.name, slug: application.slug, url: application.url, shortDescription: application.short_description, description: application.description ?? "", categoryId: application.category_id ?? "", keywords: application.keywords, status: application.status, accessType: application.access_type, pricingType: application.pricing_type, showAccessInfo: Boolean(application.show_access_info), showPricingInfo: Boolean(application.show_pricing_info), isFeatured: Boolean(application.is_featured), sortOrder: application.sort_order, iconPath: application.icon_path }, `/admin/applications/${application.id}/edit`, "Simpan perubahan"), admin, csrf: csrfToken(c) }));
+    return c.html(layout({ title: `Edit ${application.name}`, body: applicationForm(csrfToken(c), allCategories(), { name: application.name, slug: application.slug, url: application.url, shortDescription: application.short_description, description: application.description ?? "", categoryId: application.category_id ?? "", keywords: application.keywords, status: application.status, accessType: application.access_type, pricingType: application.pricing_type, showAccessInfo: Boolean(application.show_access_info), showPricingInfo: Boolean(application.show_pricing_info), isFeatured: Boolean(application.is_featured), sortOrder: application.sort_order, iconPath: application.icon_path, applicationId: application.id, screenshots: listApplicationScreenshots(application.id) }, `/admin/applications/${application.id}/edit`, "Simpan perubahan"), admin, csrf: csrfToken(c) }));
   });
 
   app.post("/admin/applications/:id/edit", async (c) => {
@@ -118,13 +174,40 @@ export function registerAdminRoutes(app: Hono) {
     if (!existing) return c.notFound();
     try {
       const input = parseApplication(body);
+      const files = screenshotFiles(body.screenshots);
+      if (countApplicationScreenshots(existing.id) + files.length > MAX_APPLICATION_SCREENSHOTS) throw new Error(`Maksimal ${MAX_APPLICATION_SCREENSHOTS} screenshot per aplikasi.`);
       const iconPath = await saveIcon(body.icon);
-      updateApplication(existing.id, input, iconPath);
+      const screenshotPaths = await saveScreenshotFiles(files);
+      try {
+        updateApplication(existing.id, input, iconPath);
+        createApplicationScreenshots(existing.id, screenshotPaths, value(body, "screenshotAlt"));
+      } catch (error) {
+        await removeUploadedFiles(screenshotPaths);
+        throw error;
+      }
       return c.redirect("/admin/applications?updated=1");
     } catch (error) {
-      const values = { ...Object.fromEntries(Object.entries(body).filter(([, item]) => typeof item === "string")), accessType: value(body, "accessType") || "public", pricingType: value(body, "pricingType") || "free", showAccessInfo: body.showAccessInfo === "on", showPricingInfo: body.showPricingInfo === "on", isFeatured: body.isFeatured === "on", iconPath: existing.icon_path } as Partial<ApplicationInput> & { iconPath?: string | null };
+      const values = { ...Object.fromEntries(Object.entries(body).filter(([, item]) => typeof item === "string")), accessType: value(body, "accessType") || "public", pricingType: value(body, "pricingType") || "free", showAccessInfo: body.showAccessInfo === "on", showPricingInfo: body.showPricingInfo === "on", isFeatured: body.isFeatured === "on", iconPath: existing.icon_path, applicationId: existing.id, screenshotAlt: value(body, "screenshotAlt"), screenshots: listApplicationScreenshots(existing.id) } as Partial<ApplicationInput> & { iconPath?: string | null; applicationId?: string; screenshotAlt?: string; screenshots?: ApplicationScreenshot[] };
       return c.html(layout({ title: `Edit ${existing.name}`, body: applicationForm(csrfToken(c), allCategories(), values, `/admin/applications/${existing.id}/edit`, "Simpan perubahan", friendlyError(error)), admin, csrf: csrfToken(c) }), 400);
     }
+  });
+
+  app.get("/admin/applications/:id/screenshots/:screenshotId/delete", (c) => {
+    const admin = currentAdmin(c)!;
+    const application = findApplication(c.req.param("id"));
+    const screenshot = findApplicationScreenshot(c.req.param("id"), c.req.param("screenshotId"));
+    if (!application || !screenshot) return c.notFound();
+    const body = `<section class="admin-main"><div class="container form-shell"><div class="panel"><p class="eyebrow">Konfirmasi tindakan</p><h1>Hapus screenshot ${esc(application.name)}?</h1><img class="screenshot-delete-preview" src="${esc(screenshot.image_path)}" alt=""><p class="muted">Screenshot ini akan dihapus dari halaman Lihat aplikasi.</p><form method="post" action="/admin/applications/${esc(application.id)}/screenshots/${esc(screenshot.id)}/delete" class="form-actions"><input type="hidden" name="_csrf" value="${esc(csrfToken(c))}"><button class="button button-primary" type="submit">Ya, hapus screenshot</button><a class="button button-secondary" href="/admin/applications/${esc(application.id)}/edit">Batal</a></form></div></div></section>`;
+    return c.html(layout({ title: "Hapus screenshot", body, admin, csrf: csrfToken(c) }));
+  });
+
+  app.post("/admin/applications/:id/screenshots/:screenshotId/delete", async (c) => {
+    const body = await c.req.parseBody();
+    if (!csrfIsValid(c, body._csrf)) return c.text("CSRF token tidak valid.", 403);
+    const screenshot = deleteApplicationScreenshot(c.req.param("id"), c.req.param("screenshotId"));
+    if (!screenshot) return c.notFound();
+    await removeUploadedFiles([screenshot.image_path]);
+    return c.redirect(`/admin/applications/${encodeURIComponent(c.req.param("id"))}/edit?updated=1`);
   });
 
   app.post("/admin/applications/:id/archive", async (c) => {
@@ -145,7 +228,9 @@ export function registerAdminRoutes(app: Hono) {
   app.post("/admin/applications/:id/delete", async (c) => {
     const body = await c.req.parseBody();
     if (!csrfIsValid(c, body._csrf)) return c.text("CSRF token tidak valid.", 403);
+    const screenshots = listApplicationScreenshots(c.req.param("id"));
     deleteApplication(c.req.param("id"));
+    await removeUploadedFiles(screenshots.map((screenshot) => screenshot.image_path));
     return c.redirect("/admin/applications?deleted=1");
   });
 

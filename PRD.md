@@ -156,7 +156,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 | FR-PUB-09 | P0 | Sistem menampilkan empty state yang jelas ketika tidak ada hasil. |
 | FR-PUB-10 | P0 | Aplikasi unggulan ditampilkan lebih menonjol tanpa menyembunyikan daftar lengkap. |
 | FR-PUB-11 | P0 | Urutan aplikasi mengikuti `sort_order`, lalu nama sebagai pengurutan stabil. |
-| FR-PUB-12 | P1 | Tersedia halaman detail aplikasi berdasarkan slug. |
+| FR-PUB-12 | P1 | Tersedia halaman detail aplikasi berdasarkan slug dengan galeri screenshot yang diunggah admin. |
 | FR-PUB-13 | P1 | Tersedia halaman Tentang yang isinya dapat dikonfigurasi. |
 
 ### Autentikasi
@@ -180,7 +180,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 | FR-APP-01 | P0 | Admin dapat melihat daftar aplikasi dari semua status. |
 | FR-APP-02 | P0 | Admin dapat mencari daftar aplikasi berdasarkan nama atau URL. |
 | FR-APP-03 | P0 | Admin dapat membuat aplikasi dengan status awal draf atau terbit. |
-| FR-APP-04 | P0 | Admin dapat mengubah nama, slug, URL, deskripsi, kategori, kata kunci, ikon, metadata akses/harga, visibilitas metadata, unggulan, status, dan urutan. |
+| FR-APP-04 | P0 | Admin dapat mengubah nama, slug, URL, deskripsi, kategori, kata kunci, ikon, screenshot, metadata akses/harga, visibilitas metadata, unggulan, status, dan urutan. |
 | FR-APP-05 | P0 | Nama, slug, URL, dan deskripsi singkat wajib diisi. |
 | FR-APP-06 | P0 | Slug aplikasi harus unik. |
 | FR-APP-07 | P0 | URL produksi harus memakai HTTPS dan skema berbahaya harus ditolak. |
@@ -190,6 +190,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 | FR-APP-11 | P0 | Admin dapat melihat pratinjau kartu sebelum menerbitkan perubahan. |
 | FR-APP-12 | P0 | Sistem menampilkan pesan sukses atau kesalahan setelah operasi. |
 | FR-APP-13 | P1 | Admin dapat mengatur ulang urutan dengan kontrol yang ramah keyboard. |
+| FR-APP-14 | P1 | Admin dapat mengunggah, melihat, dan menghapus hingga enam screenshot untuk setiap aplikasi. |
 
 ### Pengelolaan kategori
 

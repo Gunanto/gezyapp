@@ -577,6 +577,26 @@ Tetapkan konten minimum yang diperlukan agar portal dapat ditinjau dan diluncurk
 - Admin dapat mengubah urutan tanpa mengedit setiap record secara manual.
 - Urutan publik konsisten setelah refresh.
 
+### [x] GZY-049 — Tambahkan pratinjau screenshot pada aplikasi
+
+**Prioritas:** P1
+**Ukuran:** L
+**Dependensi:** GZY-025, GZY-042, GZY-045
+
+**Cakupan:**
+
+- Tambahkan tombol **Lihat** pada card publik menuju halaman detail aplikasi.
+- Sediakan galeri screenshot pada halaman detail.
+- Izinkan admin mengunggah dan menghapus hingga enam screenshot per aplikasi.
+- Validasi tipe, signature, dan ukuran screenshot serta simpan di direktori upload persisten.
+
+**Acceptance criteria:**
+
+- Card menampilkan tombol **Lihat** dan **Buka Aplikasi** secara berdampingan.
+- Halaman detail tetap informatif ketika belum ada screenshot.
+- Screenshot baru muncul setelah disimpan dan dapat dihapus dengan CSRF valid.
+- Data screenshot terhapus otomatis saat aplikasi dihapus.
+
 ### [ ] GZY-047 — Tambahkan audit log perubahan penting
 
 **Prioritas:** P1  

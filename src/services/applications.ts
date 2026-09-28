@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ApplicationStatus, ApplicationWithCategory, Category } from "../db/schema";
+import type { ApplicationScreenshot, ApplicationStatus, ApplicationWithCategory, Category } from "../db/schema";
 import { nowIso, sqlite } from "../db/client";
 
 export const applicationInputSchema = z.object({
@@ -20,6 +20,8 @@ export const applicationInputSchema = z.object({
 });
 
 export type ApplicationInput = z.infer<typeof applicationInputSchema>;
+
+export const MAX_APPLICATION_SCREENSHOTS = 6;
 
 function toApplication(row: Record<string, unknown>): ApplicationWithCategory {
   return row as unknown as ApplicationWithCategory;
@@ -100,6 +102,35 @@ export function archiveApplication(id: string) {
 
 export function deleteApplication(id: string) {
   sqlite.query(`DELETE FROM applications WHERE id = ?`).run(id);
+}
+
+export function listApplicationScreenshots(applicationId: string) {
+  return sqlite.query(`SELECT * FROM application_screenshots WHERE application_id = ? ORDER BY sort_order ASC, created_at ASC`).all(applicationId) as ApplicationScreenshot[];
+}
+
+export function countApplicationScreenshots(applicationId: string) {
+  return (sqlite.query(`SELECT count(*) AS count FROM application_screenshots WHERE application_id = ?`).get(applicationId) as { count: number }).count;
+}
+
+export function createApplicationScreenshots(applicationId: string, imagePaths: string[], altText: string) {
+  const now = nowIso();
+  const startOrder = countApplicationScreenshots(applicationId);
+  const insert = sqlite.prepare(`INSERT INTO application_screenshots (id, application_id, image_path, alt_text, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)`);
+  const transaction = sqlite.transaction((paths: string[]) => {
+    paths.forEach((imagePath, index) => insert.run(crypto.randomUUID(), applicationId, imagePath, altText.trim().slice(0, 160), startOrder + index, now));
+  });
+  transaction(imagePaths);
+}
+
+export function findApplicationScreenshot(applicationId: string, screenshotId: string) {
+  return sqlite.query(`SELECT * FROM application_screenshots WHERE application_id = ? AND id = ?`).get(applicationId, screenshotId) as ApplicationScreenshot | null;
+}
+
+export function deleteApplicationScreenshot(applicationId: string, screenshotId: string) {
+  const screenshot = findApplicationScreenshot(applicationId, screenshotId);
+  if (!screenshot) return null;
+  sqlite.query(`DELETE FROM application_screenshots WHERE application_id = ? AND id = ?`).run(applicationId, screenshotId);
+  return screenshot;
 }
 
 export function applicationStats() {

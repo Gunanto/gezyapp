@@ -64,6 +64,16 @@ export function runMigrations() {
     CREATE INDEX IF NOT EXISTS applications_status_idx ON applications(status);
     CREATE INDEX IF NOT EXISTS applications_category_idx ON applications(category_id);
     CREATE INDEX IF NOT EXISTS applications_sort_idx ON applications(sort_order, name);
+
+    CREATE TABLE IF NOT EXISTS application_screenshots (
+      id TEXT PRIMARY KEY,
+      application_id TEXT NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+      image_path TEXT NOT NULL,
+      alt_text TEXT NOT NULL DEFAULT '',
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS application_screenshots_application_idx ON application_screenshots(application_id, sort_order, created_at);
   `);
 
   // Keep existing installations compatible with the metadata introduced after the MVP schema.

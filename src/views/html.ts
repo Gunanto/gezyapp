@@ -1,6 +1,6 @@
 import { APP_VERSION } from "../config/version";
 import { config } from "../config/env";
-import type { Admin, ApplicationWithCategory, Category } from "../db/schema";
+import type { Admin, ApplicationScreenshot, ApplicationWithCategory, Category } from "../db/schema";
 
 export function esc(value: unknown) {
   return String(value ?? "")
@@ -79,7 +79,12 @@ export function flash(message: string, type: "success" | "error" = "success") {
 
 export function applicationCard(application: ApplicationWithCategory) {
   const icon = application.icon_path ? `<img src="${esc(application.icon_path)}" alt="" loading="lazy">` : `<span class="app-icon-fallback" aria-hidden="true">${esc(application.name.slice(0, 1))}</span>`;
-  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div>${applicationMeta(application)}<div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka aplikasi <span aria-hidden="true">↗</span></a></article>`;
+  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div>${applicationMeta(application)}<div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><div class="app-card-actions"><a class="button button-small button-secondary" href="/aplikasi/${esc(application.slug)}">Lihat</a><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka Aplikasi <span aria-hidden="true">↗</span></a></div></article>`;
+}
+
+export function screenshotGallery(screenshots: ApplicationScreenshot[], applicationName: string) {
+  if (!screenshots.length) return `<div class="screenshot-empty-public"><p class="eyebrow">Pratinjau aplikasi</p><p>Screenshot belum ditambahkan oleh admin.</p></div>`;
+  return `<div class="screenshot-gallery">${screenshots.map((screenshot, index) => `<figure><img src="${esc(screenshot.image_path)}" alt="${esc(screenshot.alt_text || `${applicationName} screenshot ${index + 1}`)}" loading="lazy"><figcaption>${esc(screenshot.alt_text || `Screenshot ${index + 1}`)}</figcaption></figure>`).join("")}</div>`;
 }
 
 export function applicationGrid(applications: ApplicationWithCategory[]) {
