@@ -67,7 +67,7 @@ export function layout(options: { title: string; body: string; admin?: Admin | n
         <nav class="main-nav" aria-label="Navigasi utama">${nav}${logout}</nav>
       </div></header>
       <main>${options.body}</main>
-      <footer class="site-footer"><div class="container footer-inner"><p>© 2026 Gezy App ala PakGun. All rights reserved.</p><span class="version-badge">Versi ${esc(APP_VERSION)}</span></div></footer>
+      <footer class="site-footer"><div class="container footer-inner"><p>© 2026 GezyTech. Dikembangkan oleh PakGun.</p><span class="version-badge">Versi ${esc(APP_VERSION)}</span></div></footer>
     </div>
   </body>
 </html>`;

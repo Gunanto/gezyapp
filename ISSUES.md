@@ -298,7 +298,7 @@ Tetapkan konten minimum yang diperlukan agar portal dapat ditinjau dan diluncurk
 **Cakupan:**
 
 - Buat komponen/layout footer bersama untuk halaman publik, login, dan admin.
-- Render teks persis `© 2026 Gezy App ala PakGun. All rights reserved.`.
+- Render teks persis `© 2026 GezyTech. Dikembangkan oleh PakGun.`.
 - Render versi dari helper sumber versi, dengan format `Versi X.Y.Z`.
 - Pastikan footer tetap berada di bawah konten pada layar pendek dan responsif pada ponsel.
 - Jangan merender footer di partial HTMX yang hanya mengganti daftar aplikasi.

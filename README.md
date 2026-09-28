@@ -25,4 +25,4 @@ Buka `http://localhost:3000`. Admin dapat masuk melalui `/admin/login`.
 - `bun run db:seed` — memasukkan sembilan aplikasi awal.
 - `bun run admin:create` — membuat akun admin pertama.
 
-Versi aplikasi berada di `VERSION` dan mengikuti Semantic Versioning. Footer bersama menampilkan `© 2026 Gezy App ala PakGun. All rights reserved.` serta versi yang sedang berjalan.
+Versi aplikasi berada di `VERSION` dan mengikuti Semantic Versioning. Footer bersama menampilkan `© 2026 GezyTech. Dikembangkan oleh PakGun.` serta versi yang sedang berjalan.

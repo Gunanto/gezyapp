@@ -77,7 +77,7 @@ File `VERSION` adalah sumber versi aplikasi. Ketika `package.json` tersedia, fie
 Semua halaman penuh memakai layout bersama dan footer global berikut:
 
 ```text
-© 2026 Gezy App ala PakGun. All rights reserved. · Versi 0.1.0
+© 2026 GezyTech. Dikembangkan oleh PakGun. · Versi 0.1.0
 ```
 
 Nilai versi pada footer dibaca dinamis dari sumber versi, sehingga perubahan versi tidak memerlukan perubahan teks template secara manual. Footer berlaku untuk halaman beranda, daftar/detail aplikasi, tentang, login, dashboard, dan semua halaman admin. Partial HTMX yang hanya mengganti isi daftar tidak merender footer kedua.
@@ -228,7 +228,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 | FR-SYS-01 | P0 | Aplikasi memiliki satu sumber versi valid SemVer, dimulai dari `0.1.0`. |
 | FR-SYS-02 | P0 | Versi yang berjalan dapat dibaca oleh layout, health check, log startup, dan metadata aplikasi. |
 | FR-SYS-03 | P0 | Setiap halaman penuh publik, login, dan admin menggunakan layout bersama. |
-| FR-SYS-04 | P0 | Footer global menampilkan teks persis `© 2026 Gezy App ala PakGun. All rights reserved.` |
+| FR-SYS-04 | P0 | Footer global menampilkan teks persis `© 2026 GezyTech. Dikembangkan oleh PakGun.` |
 | FR-SYS-05 | P0 | Footer global menampilkan versi dinamis, misalnya `Versi 0.1.0`, di samping teks hak cipta. |
 | FR-SYS-06 | P0 | Footer hanya dirender sekali pada halaman penuh dan tidak diduplikasi oleh partial HTMX. |
 | FR-SYS-07 | P0 | Proses rilis memperbarui `VERSION`, `package.json` (bila ada), `CHANGELOG.md`, dan tag Git secara konsisten. |

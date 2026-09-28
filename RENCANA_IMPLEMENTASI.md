@@ -14,7 +14,7 @@ Versi awal: **0.1.0**. Versi mengikuti [Semantic Versioning 2.0.0](https://semve
 Footer global pada setiap halaman penuh publik, login, dan admin wajib memuat:
 
 ```text
-© 2026 Gezy App ala PakGun. All rights reserved. · Versi 0.1.0
+© 2026 GezyTech. Dikembangkan oleh PakGun. · Versi 0.1.0
 ```
 
 Bagian `Versi 0.1.0` dibentuk secara dinamis dari sumber versi; teks hak cipta tetap persis seperti di atas. Footer ditempatkan pada layout bersama sehingga halaman baru otomatis menggunakannya.

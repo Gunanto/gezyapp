@@ -8,6 +8,10 @@ Semua perubahan penting GezyApp dicatat di sini. Format versi mengikuti [Semanti
 - Menambahkan katalog sembilan aplikasi, pencarian, filter, login sesi, CRUD aplikasi/kategori, dan unggah ikon.
 - Menambahkan footer global dengan versi dinamis serta aset ikon GezyApp.
 
+## [0.3.1] - 2026-09-28
+
+- Mengganti teks footer global menjadi `© 2026 GezyTech. Dikembangkan oleh PakGun.`.
+
 ## [0.3.0] - 2026-09-28
 
 - Menambahkan tombol **Lihat** dan **Buka Aplikasi** pada setiap card publik.
