@@ -57,7 +57,7 @@ export function layout(options: { title: string; body: string; admin?: Admin | n
     <meta name="theme-color" content="#052e24">
     <title>${esc(options.title)} · GezyApp</title>
     <link rel="icon" type="image/png" href="/static/images/gezyapp-icon-web.png">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=${encodeURIComponent(APP_VERSION)}">
     <script src="/static/htmx.min.js" defer></script>
   </head>
   <body>
