@@ -541,7 +541,27 @@ Tetapkan konten minimum yang diperlukan agar portal dapat ditinjau dan diluncurk
 - Ikon baru muncul pada pratinjau dan katalog setelah disimpan.
 - File lama ditangani tanpa menghapus file yang masih direferensikan.
 
-### [ ] GZY-046 — Tambahkan pengaturan urutan aplikasi
+### [x] GZY-046 — Tambahkan metadata akses, harga, dan visibilitas card
+
+**Prioritas:** P0
+**Ukuran:** M
+**Dependensi:** GZY-022, GZY-042
+
+**Cakupan:**
+
+- Tambahkan pilihan akses `Publik · tanpa akun` atau `Perlu akun masuk`.
+- Tambahkan pilihan harga `Gratis`, `Berbayar`, atau `Freemium`.
+- Beri admin kontrol terpisah untuk menampilkan badge akses dan badge harga pada card publik.
+- Pertahankan data lama melalui migrasi dengan default publik dan gratis.
+
+**Acceptance criteria:**
+
+- Card publik menampilkan badge yang dipilih admin.
+- Admin dapat menyembunyikan salah satu atau kedua badge tanpa menghapus nilai metadata.
+- Form tambah dan edit menyimpan pilihan metadata dengan validasi.
+- Migrasi database lama dan pengujian aplikasi lulus.
+
+### [ ] GZY-048 — Tambahkan pengaturan urutan aplikasi
 
 **Prioritas:** P1  
 **Ukuran:** M  

@@ -8,6 +8,10 @@ Semua perubahan penting GezyApp dicatat di sini. Format versi mengikuti [Semanti
 - Menambahkan katalog sembilan aplikasi, pencarian, filter, login sesi, CRUD aplikasi/kategori, dan unggah ikon.
 - Menambahkan footer global dengan versi dinamis serta aset ikon GezyApp.
 
+## [0.2.0] - 2026-09-28
+
+- Menambahkan metadata card untuk akses (publik/perlu akun) dan harga (gratis/berbayar/freemium) dengan kontrol visibilitas per aplikasi.
+
 ## [0.1.0] - 2026-09-28
 
 - Menetapkan versi awal GezyApp untuk fase pengembangan awal.

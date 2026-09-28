@@ -3,7 +3,7 @@ import { config } from "../config/env";
 import { APP_VERSION } from "../config/version";
 import { sqlite } from "../db/client";
 import { categoriesForPublic, findApplicationBySlug, listPublicApplications } from "../services/applications";
-import { applicationGrid, layout, publicCatalog } from "../views/html";
+import { applicationGrid, applicationMeta, esc, layout, publicCatalog } from "../views/html";
 
 function catalogBody(query: string, category: string) {
   return `<section class="hero"><div class="container hero-grid"><div><p class="eyebrow" style="color:#a3e635">Gerbang ekosistem GezyTech</p><h1>Semua aplikasi.<br><span>Satu tempat.</span></h1><p class="hero-copy">Temukan ruang belajar, alat kerja, platform AI, dan permainan edukasi GezyTech tanpa perlu mengingat banyak alamat.</p><div class="hero-actions"><a class="button button-primary" href="#katalog">Jelajahi aplikasi <span aria-hidden="true">↓</span></a><a class="button button-secondary" href="/tentang">Tentang GezyApp</a></div></div><div class="hero-art"><img src="/static/images/gezyapp-icon-web.png" alt="Ikon GezyApp"></div></div></section>${publicCatalog({ applications: listPublicApplications(query, category), categories: categoriesForPublic(), query, category })}`;
@@ -32,7 +32,7 @@ export function registerPublicRoutes(app: Hono) {
   app.get("/aplikasi/:slug", (c) => {
     const application = findApplicationBySlug(c.req.param("slug"));
     if (!application) return c.notFound();
-    const body = `<section class="admin-main"><div class="container form-shell"><a class="back-link" href="/">← Kembali ke katalog</a><div class="detail-card"><div class="app-icon detail-icon">${application.icon_path ? `<img src="${application.icon_path}" alt="">` : `<span class="app-icon-fallback">${application.name.slice(0, 1)}</span>`}</div><p class="eyebrow">${application.category_name ?? "GezyTech"}</p><h1>${application.name}</h1><p class="detail-description">${application.description ?? application.short_description}</p><a class="button button-primary" href="${application.url}" target="_blank" rel="noopener noreferrer">Buka aplikasi ↗</a></div></div></section>`;
+    const body = `<section class="admin-main"><div class="container form-shell"><a class="back-link" href="/">← Kembali ke katalog</a><div class="detail-card"><div class="app-icon detail-icon">${application.icon_path ? `<img src="${esc(application.icon_path)}" alt="">` : `<span class="app-icon-fallback">${esc(application.name.slice(0, 1))}</span>`}</div><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h1>${esc(application.name)}</h1>${applicationMeta(application)}<p class="detail-description">${esc(application.description ?? application.short_description)}</p><a class="button button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka aplikasi ↗</a></div></div></section>`;
     return c.html(layout({ title: application.name, body, description: application.short_description, canonicalPath: `/aplikasi/${application.slug}` }));
   });
 

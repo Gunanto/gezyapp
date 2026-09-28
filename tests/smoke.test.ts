@@ -2,10 +2,11 @@ import { test, expect, describe } from "bun:test";
 import { app } from "../src/app";
 import { APP_VERSION } from "../src/config/version";
 import { listPublicApplications } from "../src/services/applications";
+import { applicationMeta } from "../src/views/html";
 
 describe("GezyApp public shell", () => {
   test("uses a valid initial semantic version", () => {
-    expect(APP_VERSION).toBe("0.1.0");
+    expect(APP_VERSION).toBe("0.2.0");
     expect(APP_VERSION).toMatch(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/);
   });
 
@@ -14,13 +15,13 @@ describe("GezyApp public shell", () => {
     const html = await response.text();
     expect(response.status).toBe(200);
     expect(html).toContain("© 2026 Gezy App ala PakGun. All rights reserved.");
-    expect(html).toContain("Versi 0.1.0");
+    expect(html).toContain("Versi 0.2.0");
   });
 
   test("health check reports the running version", async () => {
     const response = await app.request("http://localhost/health");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "ok", version: "0.1.0" });
+    expect(await response.json()).toEqual({ status: "ok", version: "0.2.0" });
   });
 
   test("error pages keep the global footer", async () => {
@@ -32,5 +33,16 @@ describe("GezyApp public shell", () => {
 
   test("public query never returns non-published applications", () => {
     expect(listPublicApplications().every((application) => application.status === "published")).toBe(true);
+  });
+
+  test("application metadata badges respect admin visibility settings", () => {
+    const application = listPublicApplications()[0];
+    expect(application).toBeDefined();
+    const visible = applicationMeta(application);
+    expect(visible).toContain("Publik · tanpa akun");
+    expect(visible).toContain("Gratis");
+
+    const hidden = applicationMeta({ ...application, show_access_info: 0, show_pricing_info: 0 });
+    expect(hidden).toBe("");
   });
 });

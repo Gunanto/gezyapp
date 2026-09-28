@@ -147,7 +147,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 |---|---|---|
 | FR-PUB-01 | P0 | Beranda dapat diakses tanpa autentikasi. |
 | FR-PUB-02 | P0 | Sistem menampilkan semua dan hanya aplikasi berstatus `published`. |
-| FR-PUB-03 | P0 | Setiap kartu menampilkan ikon/fallback, nama, deskripsi singkat, kategori, dan tombol pembuka. |
+| FR-PUB-03 | P0 | Setiap kartu menampilkan ikon/fallback, nama, deskripsi singkat, kategori, metadata akses/harga sesuai pilihan admin, dan tombol pembuka. |
 | FR-PUB-04 | P0 | Tombol aplikasi membuka URL tujuan pada tab baru secara aman. |
 | FR-PUB-05 | P0 | Pengunjung dapat mencari berdasarkan nama, deskripsi singkat, dan kata kunci. |
 | FR-PUB-06 | P0 | Pengunjung dapat menyaring aplikasi berdasarkan kategori. |
@@ -180,7 +180,7 @@ Prioritas menggunakan `P0` untuk kebutuhan wajib peluncuran, `P1` untuk kebutuha
 | FR-APP-01 | P0 | Admin dapat melihat daftar aplikasi dari semua status. |
 | FR-APP-02 | P0 | Admin dapat mencari daftar aplikasi berdasarkan nama atau URL. |
 | FR-APP-03 | P0 | Admin dapat membuat aplikasi dengan status awal draf atau terbit. |
-| FR-APP-04 | P0 | Admin dapat mengubah nama, slug, URL, deskripsi, kategori, kata kunci, ikon, unggulan, status, dan urutan. |
+| FR-APP-04 | P0 | Admin dapat mengubah nama, slug, URL, deskripsi, kategori, kata kunci, ikon, metadata akses/harga, visibilitas metadata, unggulan, status, dan urutan. |
 | FR-APP-05 | P0 | Nama, slug, URL, dan deskripsi singkat wajib diisi. |
 | FR-APP-06 | P0 | Slug aplikasi harus unik. |
 | FR-APP-07 | P0 | URL produksi harus memakai HTTPS dan skema berbahaya harus ditolak. |

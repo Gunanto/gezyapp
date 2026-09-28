@@ -11,6 +11,30 @@ export function esc(value: unknown) {
     .replaceAll("'", "&#039;");
 }
 
+const accessLabels = {
+  public: "Publik · tanpa akun",
+  login_required: "Perlu akun masuk",
+} as const;
+
+const pricingLabels = {
+  free: "Gratis",
+  paid: "Berbayar",
+  freemium: "Freemium",
+} as const;
+
+export function applicationMeta(application: ApplicationWithCategory) {
+  const badges: string[] = [];
+  if (application.show_access_info) {
+    const label = accessLabels[application.access_type] ?? accessLabels.public;
+    badges.push(`<span class="app-badge app-badge-access app-badge-${esc(application.access_type)}"><span aria-hidden="true">${application.access_type === "public" ? "◉" : "◌"}</span>${label}</span>`);
+  }
+  if (application.show_pricing_info) {
+    const label = pricingLabels[application.pricing_type] ?? pricingLabels.free;
+    badges.push(`<span class="app-badge app-badge-pricing app-badge-${esc(application.pricing_type)}"><span aria-hidden="true">${application.pricing_type === "paid" ? "◆" : "✓"}</span>${label}</span>`);
+  }
+  return badges.length ? `<div class="app-card-meta" aria-label="Informasi aplikasi">${badges.join("")}</div>` : "";
+}
+
 export function layout(options: { title: string; body: string; admin?: Admin | null; csrf?: string; description?: string; canonicalPath?: string; noindex?: boolean }) {
   const admin = options.admin;
   const privatePage = Boolean(admin) || options.noindex;
@@ -55,7 +79,7 @@ export function flash(message: string, type: "success" | "error" = "success") {
 
 export function applicationCard(application: ApplicationWithCategory) {
   const icon = application.icon_path ? `<img src="${esc(application.icon_path)}" alt="" loading="lazy">` : `<span class="app-icon-fallback" aria-hidden="true">${esc(application.name.slice(0, 1))}</span>`;
-  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div><div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka aplikasi <span aria-hidden="true">↗</span></a></article>`;
+  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div>${applicationMeta(application)}<div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka aplikasi <span aria-hidden="true">↗</span></a></article>`;
 }
 
 export function applicationGrid(applications: ApplicationWithCategory[]) {

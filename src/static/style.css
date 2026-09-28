@@ -67,6 +67,13 @@ main { flex: 1; }
 .app-icon img { width: 100%; height: 100%; object-fit: cover; }
 .app-icon-fallback { display: grid; place-items: center; width: 100%; height: 100%; background: linear-gradient(135deg, var(--forest-800), var(--emerald)); color: var(--lime); }
 .featured-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; color: #507900; background: #e7f9ae; padding: 5px 8px; border-radius: 999px; }
+.app-card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 2px; }
+.app-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 5px 8px; font-size: .68rem; font-weight: 800; line-height: 1.1; }
+.app-badge-access { background: #e7f9ee; color: #166534; }
+.app-badge-login_required { background: #fff4d6; color: #92400e; }
+.app-badge-pricing { background: #eef2ff; color: #3730a3; }
+.app-badge-paid { background: #f3e8ff; color: #7e22ce; }
+.app-badge-freemium { background: #e0f2fe; color: #075985; }
 .app-card-content { flex: 1; }
 .app-card h3 { margin: 5px 0 8px; font-size: 1.28rem; letter-spacing: -.035em; color: var(--forest-950); }
 .app-card-content > p:last-child { margin: 0; color: var(--slate); font-size: .92rem; }
@@ -119,6 +126,7 @@ main { flex: 1; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field.full { grid-column: 1 / -1; }
 .form-field label { font-size: .82rem; font-weight: 750; color: var(--forest-950); }
+.form-label { font-size: .82rem; font-weight: 750; color: var(--forest-950); }
 .form-field small { color: var(--slate); font-size: .76rem; }
 .form-check { display: flex; align-items: center; gap: 8px; }
 .form-check input { width: 18px; height: 18px; accent-color: var(--emerald); }

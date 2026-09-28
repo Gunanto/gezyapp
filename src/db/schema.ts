@@ -1,4 +1,6 @@
 export type ApplicationStatus = "draft" | "published" | "archived";
+export type ApplicationAccessType = "public" | "login_required";
+export type ApplicationPricingType = "free" | "paid" | "freemium";
 
 export interface Admin {
   id: string;
@@ -32,6 +34,10 @@ export interface Application {
   category_id: string | null;
   keywords: string;
   status: ApplicationStatus;
+  access_type: ApplicationAccessType;
+  pricing_type: ApplicationPricingType;
+  show_access_info: number;
+  show_pricing_info: number;
   is_featured: number;
   sort_order: number;
   created_at: string;

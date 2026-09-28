@@ -11,6 +11,10 @@ export const applicationInputSchema = z.object({
   categoryId: z.string().trim().optional().default(""),
   keywords: z.string().trim().max(500, "Kata kunci terlalu panjang.").optional().default(""),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
+  accessType: z.enum(["public", "login_required"]).default("public"),
+  pricingType: z.enum(["free", "paid", "freemium"]).default("free"),
+  showAccessInfo: z.boolean().default(true),
+  showPricingInfo: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
 });
@@ -72,9 +76,9 @@ export function createApplication(input: ApplicationInput, iconPath: string | nu
   const id = crypto.randomUUID();
   const now = nowIso();
   sqlite.query(`
-    INSERT INTO applications (id, name, slug, url, short_description, description, icon_path, category_id, keywords, status, is_featured, sort_order, created_at, updated_at, published_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, input.name, input.slug, input.url, input.shortDescription, input.description || null, iconPath, input.categoryId || null, input.keywords, input.status, input.isFeatured ? 1 : 0, input.sortOrder, now, now, input.status === "published" ? now : null);
+    INSERT INTO applications (id, name, slug, url, short_description, description, icon_path, category_id, keywords, status, access_type, pricing_type, show_access_info, show_pricing_info, is_featured, sort_order, created_at, updated_at, published_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, input.name, input.slug, input.url, input.shortDescription, input.description || null, iconPath, input.categoryId || null, input.keywords, input.status, input.accessType, input.pricingType, input.showAccessInfo ? 1 : 0, input.showPricingInfo ? 1 : 0, input.isFeatured ? 1 : 0, input.sortOrder, now, now, input.status === "published" ? now : null);
   return findApplication(id);
 }
 
@@ -85,8 +89,8 @@ export function updateApplication(id: string, input: ApplicationInput, iconPath?
   const nextIcon = iconPath === undefined ? current.icon_path : iconPath;
   const publishedAt = input.status === "published" ? (current.published_at ?? now) : current.published_at;
   sqlite.query(`
-    UPDATE applications SET name = ?, slug = ?, url = ?, short_description = ?, description = ?, icon_path = ?, category_id = ?, keywords = ?, status = ?, is_featured = ?, sort_order = ?, updated_at = ?, published_at = ? WHERE id = ?
-  `).run(input.name, input.slug, input.url, input.shortDescription, input.description || null, nextIcon, input.categoryId || null, input.keywords, input.status, input.isFeatured ? 1 : 0, input.sortOrder, now, publishedAt, id);
+    UPDATE applications SET name = ?, slug = ?, url = ?, short_description = ?, description = ?, icon_path = ?, category_id = ?, keywords = ?, status = ?, access_type = ?, pricing_type = ?, show_access_info = ?, show_pricing_info = ?, is_featured = ?, sort_order = ?, updated_at = ?, published_at = ? WHERE id = ?
+  `).run(input.name, input.slug, input.url, input.shortDescription, input.description || null, nextIcon, input.categoryId || null, input.keywords, input.status, input.accessType, input.pricingType, input.showAccessInfo ? 1 : 0, input.showPricingInfo ? 1 : 0, input.isFeatured ? 1 : 0, input.sortOrder, now, publishedAt, id);
   return findApplication(id);
 }
 
