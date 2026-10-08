@@ -8,6 +8,11 @@ Semua perubahan penting GezyApp dicatat di sini. Format versi mengikuti [Semanti
 - Menambahkan katalog sembilan aplikasi, pencarian, filter, login sesi, CRUD aplikasi/kategori, dan unggah ikon.
 - Menambahkan footer global dengan versi dinamis serta aset ikon GezyApp.
 
+## [0.3.2] - 2026-10-08
+
+- Memperbarui gaya heading hero dengan font Orbitron dan gradient warna.
+- Mengubah versi asset stylesheet untuk melewati cache browser dan CDN.
+
 ## [0.3.1] - 2026-09-28
 
 - Mengganti teks footer global menjadi `© 2026 GezyTech. Dikembangkan oleh PakGun.`.
