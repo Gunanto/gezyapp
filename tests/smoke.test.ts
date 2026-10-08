@@ -6,7 +6,7 @@ import { applicationMeta } from "../src/views/html";
 
 describe("GezyApp public shell", () => {
   test("uses a valid initial semantic version", () => {
-    expect(APP_VERSION).toBe("0.3.2");
+    expect(APP_VERSION).toBe("0.3.3");
     expect(APP_VERSION).toMatch(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/);
   });
 
@@ -16,14 +16,15 @@ describe("GezyApp public shell", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("Content-Security-Policy")).toContain("https://fonts.googleapis.com");
     expect(response.headers.get("Content-Security-Policy")).toContain("https://fonts.gstatic.com");
+    expect(html).toContain('<span class="hero-title-line">Semua Aplikasi,</span><span class="hero-title-line">Satu tempat.</span>');
     expect(html).toContain("© 2026 GezyTech. Dikembangkan oleh PakGun.");
-    expect(html).toContain("Versi 0.3.2");
+    expect(html).toContain("Versi 0.3.3");
   });
 
   test("health check reports the running version", async () => {
     const response = await app.request("http://localhost/health");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "ok", version: "0.3.2" });
+    expect(await response.json()).toEqual({ status: "ok", version: "0.3.3" });
   });
 
   test("error pages keep the global footer", async () => {
