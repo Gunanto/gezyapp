@@ -14,6 +14,8 @@ describe("GezyApp public shell", () => {
     const response = await app.request("http://localhost/");
     const html = await response.text();
     expect(response.status).toBe(200);
+    expect(response.headers.get("Content-Security-Policy")).toContain("https://fonts.googleapis.com");
+    expect(response.headers.get("Content-Security-Policy")).toContain("https://fonts.gstatic.com");
     expect(html).toContain("© 2026 GezyTech. Dikembangkan oleh PakGun.");
     expect(html).toContain("Versi 0.3.2");
   });

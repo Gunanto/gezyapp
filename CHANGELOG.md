@@ -12,6 +12,7 @@ Semua perubahan penting GezyApp dicatat di sini. Format versi mengikuti [Semanti
 
 - Memperbarui gaya heading hero dengan font Orbitron dan gradient warna.
 - Mengubah versi asset stylesheet untuk melewati cache browser dan CDN.
+- Mengizinkan pemuatan font Google melalui Content Security Policy.
 
 ## [0.3.1] - 2026-09-28
 
