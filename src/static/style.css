@@ -164,3 +164,38 @@ main { flex: 1; }
 @media (max-width: 850px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } .hero-art { justify-content: start; } .hero-art img { width: 180px; } .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .container { width: min(100% - 28px, 1120px); } .header-inner { align-items: flex-start; padding: 14px 0; flex-direction: column; gap: 8px; } .main-nav { width: 100%; overflow: auto; } .hero { padding: 52px 0 62px; } .hero h1 { font-size: 2.9rem; } .hero-copy { font-size: 1rem; } .catalog-section { padding: 44px 0 64px; } .section-heading, .admin-page-heading { align-items: flex-start; flex-direction: column; } .app-grid { grid-template-columns: 1fr; } .screenshot-gallery { grid-template-columns: 1fr; } .footer-inner { align-items: flex-start; flex-direction: column; gap: 5px; } .form-grid { grid-template-columns: 1fr; } .form-field.full { grid-column: auto; } .admin-main { padding: 34px 0 60px; } .data-table th, .data-table td { padding: 11px 8px; } .auth-card { padding: 23px; } .category-edit-form { grid-template-columns: 1fr 1fr; } .category-edit-form .form-control:nth-of-type(3) { grid-column: 1 / -1; } .screenshot-admin-row { align-items: flex-start; flex-wrap: wrap; } .screenshot-admin-row span { min-width: calc(100% - 96px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+
+/* Kartu katalog: latar, aksen, label, dan ikon */
+#katalog {
+  background: linear-gradient(180deg, #f8faf8 0%, #edf4ec 100%);
+  border-radius: 24px;
+}
+
+.app-card { position: relative; overflow: hidden; }
+.app-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--emerald), var(--lime));
+}
+.app-card:hover {
+  transform: translateY(-6px);
+  border-color: #a9d7c2;
+  box-shadow: 0 22px 46px rgba(5, 46, 36, .15);
+}
+
+.app-card .eyebrow {
+  display: inline-block;
+  background: #e3f2e6;
+  color: var(--forest-800);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.app-icon {
+  box-shadow: 0 0 0 4px #eef5ee, 0 6px 14px rgba(5, 46, 36, .12);
+}

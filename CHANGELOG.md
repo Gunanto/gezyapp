@@ -18,6 +18,10 @@ Semua perubahan penting GezyApp dicatat di sini. Format versi mengikuti [Semanti
 
 - Menjaga teks `Semua Aplikasi,` tetap satu baris pada heading hero.
 
+## [0.3.4] - 2026-10-08
+
+- Menambahkan latar, aksen gradien, label pil, dan halo ikon pada kartu katalog.
+
 ## [0.3.1] - 2026-09-28
 
 - Mengganti teks footer global menjadi `© 2026 GezyTech. Dikembangkan oleh PakGun.`.
