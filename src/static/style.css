@@ -55,7 +55,7 @@ main { flex: 1; }
 .button-quiet { background: #f1f6f3; color: var(--forest-800); }
 .button-small { padding: 8px 11px; font-size: .82rem; }
 .catalog-section { position: relative; overflow: hidden; padding: 64px 0 90px; background: linear-gradient(135deg, var(--forest-950), var(--forest-800)); }
-.catalog-section::before { content: ""; position: absolute; inset: -3%; z-index: 0; background: url('/static/images/catalog-bg.webp') center/cover no-repeat; animation: bgDrift 36s ease-in-out infinite alternate-reverse; }
+.catalog-section::before { content: ""; position: absolute; inset: -3%; z-index: 0; background: url('/static/images/catalog-bg-2.webp') center/cover no-repeat; animation: bgDrift 36s ease-in-out infinite alternate-reverse; }
 .catalog-section::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(rgba(5,46,36,.8), rgba(5,46,36,.62)); }
 .catalog-section > * { position: relative; z-index: 2; }
 .catalog-section .section-heading h2 { color: #fff; }
@@ -176,10 +176,7 @@ main { flex: 1; }
 @media (max-width: 600px) { .container { width: min(100% - 28px, 1120px); } .header-inner { align-items: flex-start; padding: 14px 0; flex-direction: column; gap: 8px; } .main-nav { width: 100%; overflow: auto; } .hero { padding: 52px 0 62px; } .hero h1 { font-size: 2.9rem; } .hero-copy { font-size: 1rem; } .catalog-section { padding: 44px 0 64px; } .section-heading, .admin-page-heading { align-items: flex-start; flex-direction: column; } .app-grid { grid-template-columns: 1fr; } .screenshot-gallery { grid-template-columns: 1fr; } .footer-inner { align-items: flex-start; flex-direction: column; gap: 5px; } .form-grid { grid-template-columns: 1fr; } .form-field.full { grid-column: auto; } .admin-main { padding: 34px 0 60px; } .data-table th, .data-table td { padding: 11px 8px; } .auth-card { padding: 23px; } .category-edit-form { grid-template-columns: 1fr 1fr; } .category-edit-form .form-control:nth-of-type(3) { grid-column: 1 / -1; } .screenshot-admin-row { align-items: flex-start; flex-wrap: wrap; } .screenshot-admin-row span { min-width: calc(100% - 96px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
 
-/* Kartu katalog: latar, aksen, label, dan ikon */
-#katalog {
-  border-radius: 24px;
-}
+/* Kartu katalog: aksen, label, dan ikon */
 
 .app-card {
   position: relative;
