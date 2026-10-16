@@ -77,9 +77,19 @@ export function flash(message: string, type: "success" | "error" = "success") {
   return `<div class="flash flash-${type}" role="status">${esc(message)}</div>`;
 }
 
+const CATEGORY_ACCENTS: Record<string, readonly [string, string]> = {
+  education: ["#059669", "#34d399"],
+  productivity: ["#0284c7", "#38bdf8"],
+  platform: ["#65a30d", "#a3e635"],
+  ai: ["#7c3aed", "#c084fc"],
+  "learning-games": ["#d97706", "#fbbf24"],
+};
+const DEFAULT_ACCENT: readonly [string, string] = ["#059669", "#34d399"];
+
 export function applicationCard(application: ApplicationWithCategory) {
   const icon = application.icon_path ? `<img src="${esc(application.icon_path)}" alt="" loading="lazy">` : `<span class="app-icon-fallback" aria-hidden="true">${esc(application.name.slice(0, 1))}</span>`;
-  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div>${applicationMeta(application)}<div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><div class="app-card-actions"><a class="button button-small button-secondary" href="/aplikasi/${esc(application.slug)}">Lihat</a><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka Aplikasi <span aria-hidden="true">↗</span></a></div></article>`;
+  const [accent1, accent2] = CATEGORY_ACCENTS[application.category_slug ?? ""] ?? DEFAULT_ACCENT;
+  return `<article class="app-card ${application.is_featured ? "is-featured" : ""}" style="--ac1:${accent1};--ac2:${accent2}"><div class="app-card-top"><div class="app-icon">${icon}</div>${application.is_featured ? '<span class="featured-label">Unggulan</span>' : ""}</div>${applicationMeta(application)}<div class="app-card-content"><p class="eyebrow">${esc(application.category_name ?? "GezyTech")}</p><h3>${esc(application.name)}</h3><p>${esc(application.short_description)}</p></div><div class="app-card-actions"><a class="button button-small button-secondary" href="/aplikasi/${esc(application.slug)}">Lihat</a><a class="button button-small button-primary" href="${esc(application.url)}" target="_blank" rel="noopener noreferrer">Buka Aplikasi <span aria-hidden="true">↗</span></a></div></article>`;
 }
 
 export function screenshotGallery(screenshots: ApplicationScreenshot[], applicationName: string) {

@@ -178,7 +178,6 @@ main { flex: 1; }
 
 /* Kartu katalog: latar, aksen, label, dan ikon */
 #katalog {
-  background: linear-gradient(180deg, #f8faf8 0%, #edf4ec 100%);
   border-radius: 24px;
 }
 
@@ -191,18 +190,18 @@ main { flex: 1; }
   right: 18px;
   height: 4px;
   border-radius: 0 0 4px 4px;
-  background: linear-gradient(90deg, var(--emerald), var(--lime));
+  background: linear-gradient(90deg, var(--ac1, var(--emerald)), var(--ac2, var(--lime)));
 }
 .app-card:hover {
   transform: translateY(-6px);
-  border-color: #a9d7c2;
-  box-shadow: 0 22px 46px rgba(5, 46, 36, .15);
+  border-color: var(--ac2, #a9d7c2);
+  box-shadow: 0 22px 46px color-mix(in srgb, var(--ac1, var(--emerald)) 22%, transparent);
 }
 
 .app-card .eyebrow {
   display: inline-block;
-  background: #e3f2e6;
-  color: var(--forest-800);
+  background: color-mix(in srgb, var(--ac1, var(--emerald)) 12%, white);
+  color: var(--ac1, var(--forest-800));
   padding: 4px 12px;
   border-radius: 999px;
 }

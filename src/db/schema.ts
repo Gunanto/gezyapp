@@ -47,6 +47,7 @@ export interface Application {
 
 export interface ApplicationWithCategory extends Application {
   category_name: string | null;
+  category_slug: string | null;
 }
 
 export interface ApplicationScreenshot {

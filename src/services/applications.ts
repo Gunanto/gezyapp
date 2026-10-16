@@ -31,7 +31,7 @@ export function listPublicApplications(query = "", categorySlug = "") {
   const q = query.trim().toLowerCase();
   const search = `%${q}%`;
   return sqlite.query(`
-    SELECT a.*, c.name AS category_name
+    SELECT a.*, c.name AS category_name, c.slug AS category_slug
     FROM applications a
     LEFT JOIN categories c ON c.id = a.category_id
     WHERE a.status = 'published'
