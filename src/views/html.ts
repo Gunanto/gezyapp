@@ -1,4 +1,5 @@
 import { APP_VERSION } from "../config/version";
+import { STYLE_HASH } from "../config/assets";
 import { config } from "../config/env";
 import type { Admin, ApplicationScreenshot, ApplicationWithCategory, Category } from "../db/schema";
 
@@ -57,7 +58,7 @@ export function layout(options: { title: string; body: string; admin?: Admin | n
     <meta name="theme-color" content="#052e24">
     <title>${esc(options.title)} · GezyApp</title>
     <link rel="icon" type="image/png" href="/static/images/gezyapp-icon-web.png">
-    <link rel="stylesheet" href="/static/style.css?v=${encodeURIComponent(APP_VERSION)}">
+    <link rel="stylesheet" href="/static/style.css?v=${STYLE_HASH}">
     <script src="/static/htmx.min.js" defer></script>
   </head>
   <body>
