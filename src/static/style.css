@@ -181,31 +181,34 @@ main { flex: 1; }
   border-radius: 24px;
 }
 
-.app-card { position: relative; overflow: hidden; }
+.app-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ac1, var(--emerald)) 8%, white), white 42%);
+}
 .app-card::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 18px;
-  right: 18px;
-  height: 4px;
-  border-radius: 0 0 4px 4px;
+  left: 0;
+  right: 0;
+  height: 6px;
   background: linear-gradient(90deg, var(--ac1, var(--emerald)), var(--ac2, var(--lime)));
 }
 .app-card:hover {
   transform: translateY(-6px);
-  border-color: var(--ac2, #a9d7c2);
-  box-shadow: 0 22px 46px color-mix(in srgb, var(--ac1, var(--emerald)) 22%, transparent);
+  border-color: var(--ac1, #a9d7c2);
+  box-shadow: 0 22px 46px color-mix(in srgb, var(--ac1, var(--emerald)) 30%, transparent);
 }
 
 .app-card .eyebrow {
   display: inline-block;
-  background: color-mix(in srgb, var(--ac1, var(--emerald)) 12%, white);
-  color: var(--ac1, var(--forest-800));
+  background: var(--ac1, var(--forest-800));
+  color: #fff;
   padding: 4px 12px;
   border-radius: 999px;
 }
 
 .app-icon {
-  box-shadow: 0 0 0 4px #eef5ee, 0 6px 14px rgba(5, 46, 36, .12);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ac1, var(--emerald)) 16%, #eef5ee), 0 6px 14px rgba(5, 46, 36, .12);
 }
