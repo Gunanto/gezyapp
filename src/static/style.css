@@ -31,7 +31,7 @@ main { flex: 1; }
 .nav-link:hover, .nav-link:focus-visible { background: rgba(255,255,255,.1); color: white; }
 .nav-link-accent { color: var(--lime); }
 .inline-form { display: inline; }
-.hero { background: radial-gradient(circle at 78% 18%, rgba(163,230,53,.2), transparent 27%), linear-gradient(135deg, var(--forest-950), var(--forest-800)); color: white; padding: 76px 0 88px; }
+.hero { background: linear-gradient(rgba(5,46,36,.72), rgba(5,46,36,.55)), url('/static/images/hero-bg.webp') center/cover no-repeat, linear-gradient(135deg, var(--forest-950), var(--forest-800)); color: white; padding: 76px 0 88px; }
 .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 60px; align-items: center; }
 .hero h1 { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 1.01; letter-spacing: -.07em; margin: 12px 0 24px; max-width: 700px; background: linear-gradient(92deg, #ffffff 5%, #7dd3fc 48%, #f472b6 95%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 .hero h1 span { -webkit-text-fill-color: transparent; color: transparent; }
