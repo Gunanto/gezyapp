@@ -184,8 +184,8 @@ main { flex: 1; }
 .app-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(155deg, color-mix(in srgb, var(--ac1, var(--emerald)) 16%, white), color-mix(in srgb, var(--ac2, var(--lime)) 12%, white));
-  border-color: color-mix(in srgb, var(--ac1, var(--emerald)) 28%, white);
+  background: linear-gradient(155deg, color-mix(in srgb, var(--ac1, var(--emerald)) 21%, white), color-mix(in srgb, var(--ac2, var(--lime)) 16%, white));
+  border-color: color-mix(in srgb, var(--ac1, var(--emerald)) 37%, white);
 }
 .app-card::before {
   content: "";
